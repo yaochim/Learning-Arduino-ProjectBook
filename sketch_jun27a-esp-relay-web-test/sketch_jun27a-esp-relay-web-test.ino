@@ -150,9 +150,5 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if(digitalRead(relayGPIOs[0]) == 1){
-    sleep(10);
-    digitalWrite(relayGPIOs[0], LOW);
-  }
 
 }
