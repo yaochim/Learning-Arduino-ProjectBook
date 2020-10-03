@@ -148,7 +148,32 @@ void setup() {
 
 }
 
+void relayTimer(){
+  
+  bool setDelay=false;
+  for(int i=1; i<=NUM_RELAYS; i++){
+    if(digitalRead(relayGPIOs[i-1])){
+      Serial.println("Setting delay");
+      setDelay=true;
+    }
+  }
+  if (setDelay) {
+    Serial.println("Delaying 5s");
+    delay(5000);
+  }
+
+  for(int i=1; i<=NUM_RELAYS; i++){
+    pinMode(relayGPIOs[i-1], OUTPUT);
+    if(digitalRead(relayGPIOs[i-1])){
+      Serial.println("Setting to off");
+      digitalWrite(relayGPIOs[i-1], LOW);
+    }
+  }
+}
+
 void loop() {
   // put your main code here, to run repeatedly:
+  relayTimer();
+  delay(1000);
 
 }
