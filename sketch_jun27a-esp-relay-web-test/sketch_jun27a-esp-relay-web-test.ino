@@ -14,7 +14,7 @@ int relayGPIOs[NUM_RELAYS] = {26};
 const char* ssid = "CHIM8DTPL";
 const char* password = "88_Chim_99";
 
-const char* PARAM_INPUT_1 = "relay";  
+const char* PARAM_INPUT_1 = "relay";
 const char* PARAM_INPUT_2 = "state";
 
 // Create AsyncWebServer object on port 80
@@ -29,7 +29,7 @@ const char index_html[] PROGMEM = R"rawliteral(
     h2 {font-size: 3.0rem;}
     p {font-size: 3.0rem;}
     body {max-width: 600px; margin:0px auto; padding-bottom: 25px;}
-    .switch {position: relative; display: inline-block; width: 120px; height: 68px} 
+    .switch {position: relative; display: inline-block; width: 120px; height: 68px}
     .switch input {display: none}
     .slider {position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border-radius: 34px}
     .slider:before {position: absolute; content: ""; height: 52px; width: 52px; left: 8px; bottom: 8px; background-color: #fff; -webkit-transition: .4s; transition: .4s; border-radius: 68px}
@@ -40,12 +40,35 @@ const char index_html[] PROGMEM = R"rawliteral(
 <body>
   <h2>ESP Web Server</h2>
   %BUTTONPLACEHOLDER%
-<script>function toggleCheckbox(element) {
+<script>
+function toggleCheckbox(element) {
   var xhr = new XMLHttpRequest();
   if(element.checked){ xhr.open("GET", "/update?relay="+element.id+"&state=1", true); }
   else { xhr.open("GET", "/update?relay="+element.id+"&state=0", true); }
   xhr.send();
-}</script>
+}
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var inputChecked;
+      var outputStateM;
+      if( this.responseText == 1){
+        inputChecked = true;
+        outputStateM = "On";
+      }
+      else {
+        inputChecked = false;
+        outputStateM = "Off";
+      }
+      document.getElementById("output").checked = inputChecked;
+      document.getElementById("outputState").innerHTML = outputStateM;
+    }
+  };
+  xhttp.open("GET", "/state", true);
+  xhttp.send();
+}, 1000 ) ;
+</script>
 </body>
 </html>
 )rawliteral";
@@ -99,7 +122,7 @@ void setup() {
       digitalWrite(relayGPIOs[i-1], HIGH);
     }
   }
-  
+
   // Connect to Wi-Fi
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -149,7 +172,7 @@ void setup() {
 }
 
 void relayTimer(){
-  
+
   bool setDelay=false;
   for(int i=1; i<=NUM_RELAYS; i++){
     if(digitalRead(relayGPIOs[i-1])){
