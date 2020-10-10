@@ -61,7 +61,7 @@ setInterval(function ( ) {
         inputChecked = false;
         outputStateM = "Off";
       }
-      document.getElementById("output").checked = inputChecked;
+      document.getElementById("1").checked = inputChecked;
       document.getElementById("outputState").innerHTML = outputStateM;
     }
   };
@@ -165,6 +165,11 @@ void setup() {
     }
     Serial.println(inputMessage + inputMessage2);
     request->send(200, "text/plain", "OK");
+  });
+
+  // Send a GET request to <ESP_IP>/state
+  server.on("/state", HTTP_GET, [] (AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", String(digitalRead(relayGPIOs[0])));
   });
   // Start server
   server.begin();
